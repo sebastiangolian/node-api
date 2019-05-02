@@ -17,9 +17,18 @@ router.get('/', (req, res) => {
   return res.status(200).json(games);
 });
 
+router.get('/:id', (req, res) => {
+  let gameCode = req.params.id;
+  let foundGame = games.find(each => each.id == gameCode);
+  if (foundGame) {
+    return res.status(200).json(foundGame);
+  }
+  return res.status(400).json({msg: 'Game with id ' + gameCode + ' not found!'});
+});
+
 router.post('/', (req, res) => {
   let game = req.body;
-  let foundGame = games.find(each => each.id === game.id);
+  let foundGame = games.find(each => each.id == game.id);
   if (foundGame) {
     return res.status(400).json({msg: 'Game with id ' + game.id + ' already exists'});
   }
@@ -28,15 +37,13 @@ router.post('/', (req, res) => {
 });
 
 router.patch('/:id', (req, res) => {
-  let gameCode = req.params.id;
-  let foundGame = games.find(each => each.id === gameCode);
-  if (foundGame) {
-    foundGame.favorite = req.body.favorite;
-    let msg = 'Game with id ' + gameCode + ' is now ';
-    msg += foundGame.favorite ? ' favorited.' : ' unfavorited';
-    return res.status(200).json({msg: msg});
+  let gameId = req.params.id;
+  let index = games.findIndex(game => game.id == gameId);
+  if (index > -1) {
+    games[index] = req.body;
+    return res.status(200).json({msg: 'Game with id ' + gameId + ' is updated!'});
   }
-  return res.status(400).json({msg: 'Game with id ' + gameCode + ' not found!'});
+  return res.status(400).json({msg: 'Game with id ' + gameId + ' not found!'});
 });
 
 module.exports = router;
