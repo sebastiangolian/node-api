@@ -7,6 +7,7 @@ const games = [
   {id: 3, title: 'WOT', price: 0},
 ];
 
+// GET http://localhost:3000/api/games
 router.get('/', (req, res) => {
   var query = (req.query['q'] || '').toLowerCase();
   if (query) {
@@ -17,6 +18,7 @@ router.get('/', (req, res) => {
   return res.status(200).json(games);
 });
 
+// GET http://localhost:3000/api/games/1
 router.get('/:id', (req, res) => {
   let gameCode = req.params.id;
   let foundGame = games.find(each => each.id == gameCode);
@@ -26,6 +28,7 @@ router.get('/:id', (req, res) => {
   return res.status(400).json({msg: 'Game with id ' + gameCode + ' not found!'});
 });
 
+// POST http://localhost:3000/api/games {"id":4,"title":"Unreal","price":100}   Content-Type: application/json
 router.post('/', (req, res) => {
   let game = req.body;
   let foundGame = games.find(each => each.id == game.id);
@@ -36,12 +39,24 @@ router.post('/', (req, res) => {
   return res.status(200).json({msg: 'Game with id ' + game.id + ' successfully created'});
 });
 
+// PATCH http://localhost:3000/api/games/1 {"id":1,"title":"FIFA 2019","price":100}   Content-Type: application/json
 router.patch('/:id', (req, res) => {
   let gameId = req.params.id;
   let index = games.findIndex(game => game.id == gameId);
   if (index > -1) {
     games[index] = req.body;
     return res.status(200).json({msg: 'Game with id ' + gameId + ' is updated!'});
+  }
+  return res.status(400).json({msg: 'Game with id ' + gameId + ' not found!'});
+});
+
+// DELETE http://localhost:3000/api/games/1 
+router.delete('/:id', (req, res) => {
+  let gameId = req.params.id;
+  let index = games.findIndex(game => game.id == gameId);
+  if (index > -1) {
+    games.splice(index,1);
+    return res.status(200).json({msg: 'Game with id ' + gameId + ' is deleted!'});
   }
   return res.status(400).json({msg: 'Game with id ' + gameId + ' not found!'});
 });
